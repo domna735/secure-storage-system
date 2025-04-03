@@ -1,77 +1,53 @@
-# 🔐 Secure Storage
+🔐 Secure Storage
+一個基於 Flask + AES 加密的安全文件儲存系統，支援高效文件上傳、分塊加密、共享、下載與刪除操作。使用客戶端與伺服器分離設計，適合教學專案與安全應用的基礎實作。
 
-一个基于 Flask + AES 加密的安全文件存储系统，支持高效文件上传、分块加密、共享、下载与删除操作。使用客户端和服务器分离设计，适合教学项目与安全应用的基础实现。
+✨ 功能特性
+✅ 用戶註冊與登入
+✅ AES 對稱加密儲存文件
+✅ 分塊上傳與下載，支援局部更新
+✅ 文件哈希校驗，確保完整性
+✅ 檔案共享功能
+✅ 權限控制：使用者只能存取自己的文件或被分享的文件
+✅ 本機儲存 hashmap 映射
+✅ 檔案刪除、密碼修改等實用操作
+🖼️ 系統結構
+client_main.py：命令列客戶端入口
+client_functions.py：使用者認證與金鑰管理
+clientfile_handler.py：上傳、下載、分享、刪除等核心功能
+server.py：Flask 後端服務，處理各類 API 請求
+secure_storage.db：SQLite 資料庫儲存使用者和檔案訊息
+hashmap/：本地 hashmap 快取目錄
+🚀 使用方法
+🧱 0. 初始化資料庫（首次運行時必須執行）
+第一次使用前，先執行 init_db.py 以初始化 SQLite 資料庫：
 
-## ✨ 功能特性
+python init_db.py
+你會看到提示：
 
-- ✅ 用户注册与登录
-- ✅ AES 对称加密存储文件
-- ✅ 分块上传与下载，支持局部更新
-- ✅ 文件哈希校验，确保完整性
-- ✅ 文件共享功能
-- ✅ 权限控制：用户只能访问自己的文件或被共享的文件
-- ✅ 本地存储 hashmap 映射
-- ✅ 文件删除、密码修改等实用操作
+🛠 Admin account created with default password: admin123
+✅ Database initialized successfully with full chunked file support.
+🖥 1. 啟動伺服器
+確保目前目錄下有 server.py，然後在終端機中執行：
 
-## 🖼️ 系统结构
+python server.py
+如果成功運行，你將看到類似輸出：
 
-- `client_main.py`：命令行客户端入口
-- `client_functions.py`：用户认证与密钥管理
-- `clientfile_handler.py`：上传、下载、共享、删除等核心功能
-- `server.py`：Flask 后端服务，处理各类 API 请求
-- `secure_storage.db`：SQLite 数据库存储用户和文件信息
-- `hashmap/`：本地 hashmap 缓存目录
+* Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+💻 2. 啟動客戶端
+另開一個終端機窗口，運行客戶端入口文件：
 
-## 🚀 使用方法
+python client_main.py
+📂 用戶端支援操作
+✅ 註冊 / 登入
+✅ 上傳檔案（分割加密 + 高效率更新）
+✅ 下載檔案（自動哈希校驗）
+✅ 刪除文件
+✅ 修改密碼
+✅ 共享檔案（透過使用者名稱授權他人存取）
+✅ 顯示可存取的所有檔案（包括他人共用）
+⚠️ 注意事項
+所有檔案上傳前會使用 AES 加密，每個分塊分別處理。
+上傳後本地會產生 hashmap/檔名.hashmap，加快後續同步。
+被共享用戶在下載時，服務端會對每個分塊重新加密以保護隱私。
+刪除操作會同時刪除遠端分塊和本機 hashmap。
 
-### 🧱 0. 初始化数据库（首次运行时必须执行）
-
-第一次使用前，先运行 `init_db.py` 以初始化 SQLite 数据库：
-
-    python init_db.py
-
-你会看到提示：
-
-    🛠 Admin account created with default password: admin123
-    ✅ Database initialized successfully with full chunked file support.
-
----
-
-### 🖥 1. 启动服务器
-
-确保当前目录下有 `server.py`，然后在终端中运行：
-
-    python server.py
-
-如果成功运行，你将看到类似输出：
-
-    * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-
----
-
-### 💻 2. 启动客户端
-
-另开一个终端窗口，运行客户端入口文件：
-
-    python client_main.py
-
----
-
-### 📂 客户端支持操作
-
-- ✅ 注册 / 登录
-- ✅ 上传文件（分块加密 + 高效更新）
-- ✅ 下载文件（自动哈希校验）
-- ✅ 删除文件
-- ✅ 修改密码
-- ✅ 共享文件（通过用户名授权他人访问）
-- ✅ 显示可访问的所有文件（包括他人共享）
-
----
-
-### ⚠️ 注意事项
-
-- 所有文件上传前会使用 AES 加密，每个分块分别处理。
-- 上传后本地会生成 `hashmap/文件名.hashmap`，加快后续同步。
-- 被共享用户在下载时，服务端会对每个分块重新加密以保护隐私。
-- 删除操作会同时删除远端分块和本地 hashmap。
