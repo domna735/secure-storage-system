@@ -1,79 +1,102 @@
-# secure-storage-system
-
 # 🔐 Secure Storage
+A secure file storage system based on Flask + AES encryption, which supports efficient file upload, block encryption, sharing, downloading, and deletion operations. It uses client and server separation design.
 
-一個基於 Flask + AES 加密的安全文件儲存系統，支援高效文件上傳、分塊加密、共享、下載與刪除操作。使用客戶端與伺服器分離設計，適合教學專案與安全應用的基礎實作。
+## ✨Features
+- ✅ User registration and login
+- ✅ AES symmetric encryption for file storage
+- ✅ Block upload and download, support for local updates
+- ✅ File hash verification to ensure integrity
+- ✅ File sharing function
+- ✅ Permission control: users can only access their own files or shared files
+- ✅ Local storage hashmap mapping
+- ✅ Practical operations such as file deletion and password modification
 
-## ✨ 功能特性
+## 🖼️ System Structure
+- `client_main.py`: command line client entry
+- `client_functions.py`: user authentication and key management
+- `clientfile_handler.py`: core functions such as upload, download, share, delete, etc.
+- `server.py`: Flask backend service, handling various API requests
+- `secure_storage.db`: SQLite database to store user and file information
+- `hashmap/`: local hashmap cache directory
+- `security_test.py`: Test whether the files uploaded by users can be decrypted or downloaded by unauthorized users or not
 
-- ✅ 用戶註冊與登入
-- ✅ AES 對稱加密儲存文件
-- ✅ 分塊上傳與下載，支援局部更新
-- ✅ 檔案雜湊校驗，確保完整性
-- ✅ 檔案共享功能
-- ✅ 權限控制：使用者只能存取自己的檔案或被共用的文件
-- ✅ 本機儲存 hashmap 映射
-- ✅ 檔案刪除、密碼修改等實用操作
+## 🚀 How to use
 
-## 🖼️ 系統結構
+### 🧱 0. Initialize the database (must be executed when running for the first time)
+Before using the database for the first time, run `pip install -r requirements.txt` to install the required packages and run `rm secure_storage.db` to clear the database
 
-- `client_main.py`：命令列客戶端入口
-- `client_functions.py`：使用者認證與金鑰管理
-- `clientfile_handler.py`：上傳、下載、分享、刪除等核心功能
-- `server.py`：Flask 後端服務，處理各類 API 請求
-- `secure_storage.db`：SQLite 資料庫儲存使用者和檔案訊息
-- `hashmap/`：本地 hashmap 快取目錄
+    pip install -r requirements.txt
+    rm secure_storage.db
 
-## 🚀 使用方法
 
-### 🧱 0. 初始化資料庫（首次運行時必須執行）
+Then run `init_db.py` to initialize the SQLite database
 
-第一次使用前，先執行 `init_db.py` 以初始化 SQLite 資料庫：
+    python init_db.py
 
- python init_db.py
+You will see the prompt:
 
-你會看到提示：
-
- 🛠 Admin account created with default password: admin123
- ✅ Database initialized successfully with full chunked file support.
-
----
-
-### 🖥 1. 啟動伺服器
-
-確保目前目錄下有 `server.py`，然後在終端機中執行：
-
- python server.py
-
-如果成功運行，你將看到類似輸出：
-
- * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+    🛠 Admin account created with default username: admin &  password: admin123
+    ✅ Database initialized successfully with full chunked file support.
 
 ---
 
-### 💻 2. 啟動客戶端
+### 🖥 1. Start the server
+Make sure there is `server.py` in the current directory, then run in the terminal:
 
-另開一個終端機窗口，運行客戶端入口文件：
+python server.py
 
- python client_main.py
+If it runs successfully, you will see output similar to:
 
----
-
-### 📂 客戶端支援操作
-
-- ✅ 註冊 / 登入
-- ✅ 上傳檔案（分割加密 + 高效率更新）
-- ✅ 下載檔案（自動雜湊校驗）
-- ✅ 刪除文件
-- ✅ 修改密碼
-- ✅ 共享檔案（透過使用者名稱授權他人存取）
-- ✅ 顯示可存取的所有檔案（包括他人共用）
+    * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 
 ---
 
-### ⚠️ 注意事項
+### 💻 2. Start the client
+Open another terminal window and run the client entry file:
 
-- 所有檔案上傳前會使用 AES 加密，每個分塊分別處理。
-- 上傳後本機會產生 `hashmap/檔名.hashmap`，加快後續同步。
-- 被共用使用者在下載時，服務端會對每個分塊重新加密以保護隱私。
-- 刪除操作會同時刪除遠端分塊和本機 hashmap。
+    python client_main.py
+
+---
+
+### 💻 3. Test SQL injection
+Input the following SQL injection strings in the useername field
+- ' or 1 = 1
+- abc /*。 */
+
+---
+
+### 💻 4. Test whether the files uploaded by users can be decrypted or downloaded by unauthorized users
+Run the client entry file:
+
+    python security_test.py
+
+---
+
+### 💻 4. Test SQL injection
+Input the following SQL injection strings in the useername field
+- ' or 1 = 1
+- abc /*。 */
+
+---
+
+### 📂 Client support operations
+- ✅ Register / Login
+- ✅ Upload files (block encryption + efficient update)
+- ✅ Download files (automatic hash verification)
+- ✅ Delete files
+- ✅ Reset password
+- ✅ Share files (authorize others to access by username)
+- ✅ Display all accessible files (including those shared by others)
+
+
+### 📂 Admin support operations
+- ✅ Register / Login
+- ✅ Review the logs of all users
+
+---
+
+### ⚠️ Precautions
+- All files will be encrypted using AES before uploading, and each block will be processed separately.
+- After uploading, `hashmap/filename.hashmap` will be generated locally to speed up subsequent synchronization.
+- When the shared user downloads, the server will re-encrypt each block to protect privacy.
+- The delete operation will delete both the remote block and the local hashmap.
